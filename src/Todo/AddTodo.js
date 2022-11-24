@@ -14,49 +14,77 @@ function useInputValue(defaultValue = '') {
     }
 }
 
+function useFileInputValue(defaultValue = '') {
+    const [value, setValue] = useState(defaultValue)
+
+    return {
+        bind: {
+            // value: value,
+            onChange: event => setValue(event.currentTarget.files)
+        },
+        clear: () => setValue(''),
+        value: () => value
+    }
+}
+
 function AddTodo({ onCreate }) {
-    const input = useInputValue('')
+    const titleState = useInputValue()
+    const descriptionState = useInputValue()
+    const filesState = useFileInputValue()
+    const dateState = useInputValue()
 
     function submitHandler(event) {
         event.preventDefault()
+        const data = {
+            title: titleState.value(),
+            description: descriptionState.value(),
+            files: filesState.value(),
+            date: dateState.value()
+        };
 
-        if (input.value().trim()) {
-            onCreate(input.value())
-            input.clear()
-        }
+        onCreate(data)
+
+        titleState.clear()
+        descriptionState.clear()
+        filesState.clear()
+        dateState.clear()
     }
 
     return (
         <form style={{ marginBottom: '1rem' }} onSubmit={submitHandler}>
-            <input {...input.bind} />
+            <input placeholder="Заголовок задачи" {...titleState.bind} />
+            <br />
+            <br />
             <textarea
+                {...descriptionState.bind}
                 name='description'
                 type='text'
                 placeholder='Описание задачи'
-                className='input-textarea'
-                // value={todo.description}
                 required
-            // onChange={onChange}
             />
+            <br />
+            <br />
             <input
+                {...filesState.bind}
                 multiple='true'
-                name='upload'
+                name='files'
                 type='file'
                 placeholder='Загрузите файл'
-                className='upload-input'
-            // value={currentTodo.upload}
-            // onChange={onChange}
             />
+            <br />
+            <br />
             <label className='label-date'>
                 <span>Укажите дату завершения задачи</span>
+                <br />
                 <input
-                    name="date"
+                    {...dateState.bind}
+                    name='date'
                     type='date'
-                    // value={currentTodo.date}
                     required
-                // onChange={onChange}
                 />
             </label>
+            <br />
+            <br />
             <button type='submit'>Add todo</button>
         </form>
     )

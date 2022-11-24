@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import TodoList from './Todo/TodoList';
 import Context from './context';
-import Modal from './Modal/Modal';
+// import Modal from './Modal/Modal';
+import { saveTodos, getTodos } from './firebase';
 
 
 const AddTodo = React.lazy(
@@ -9,21 +10,32 @@ const AddTodo = React.lazy(
         new Promise(resolve => {
             setTimeout(() => {
                 resolve(import('./Todo/AddTodo'))
-            }, 2000)
+            }, 1500)
         })
 )
 
 function App() {
     const [todos, setTodos] = React.useState([])
 
+
+
     useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/todos?_limit=5')
-            .then(response => response.json())
-            .then(todos => {
-                setTimeout(() => {
-                    setTodos(todos)
-                }, 2000)
-            })
+        // fetch('https://jsonplaceholder.typicode.com/todos?_limit=5')
+        //     .then(response => response.json())
+        //     .then(todos => {
+        //         setTimeout(() => {
+        //             setTodos(todos)
+        //         }, 1500)
+        //     })
+
+        async function loadTodos() {
+            const todos = await getTodos();
+
+            console.log('todos: ', todos);
+            setTodos(todos);
+        }
+
+        loadTodos()
     }, [])
 
     function toggleTodo(id) {
@@ -41,21 +53,31 @@ function App() {
         setTodos(todos.filter(todo => todo.id !== id))
     }
 
-    function addTodo(title) {
-        setTodos(todos.concat([{
-            title,
+    function addTodo(data) {
+        const todo = {
+            title: data.title,
             id: Date.now(),
             completed: false,
-            description: '',
-            date: ''
-        }]))
+            description: data.description,
+            date: data.date,
+            files: data.files
+        };
+        setTodos(todos.concat([todo]))
+        saveTodos({
+            title: data.title,
+            id: Date.now(),
+            completed: false,
+            description: data.description,
+            date: data.date,
+            files: []
+        });
     }
 
     return (
         <Context.Provider value={{ removeTodo }}>
             <div className='wrapper'>
                 <h1 className='title'>todos</h1>
-                <Modal />
+                {/* <Modal /> */}
 
                 <React.Suspense fallback={<p>Loading...</p>}>
                     <AddTodo onCreate={addTodo} />

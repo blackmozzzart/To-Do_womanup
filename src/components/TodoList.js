@@ -10,6 +10,11 @@ const styles = {
     }
 }
 
+/**
+ * TodoList - компонент который выводит список тудушек
+ * @param {Object} props
+ * @param {Array} props.todos - массив с задачами
+ */
 function TodoList(props) {
     return (
         <ul style={styles.ul}>
@@ -19,7 +24,6 @@ function TodoList(props) {
                         todo={todo}
                         key={todo.id}
                         index={index}
-                        onChange={props.onToggle}
                     />
                 )
             })}
@@ -29,7 +33,6 @@ function TodoList(props) {
 
 TodoList.propTypes = {
     todos: PropTypes.arrayOf(PropTypes.object).isRequired,
-    onToggle: PropTypes.func.isRequired
 }
 
 export default TodoList;

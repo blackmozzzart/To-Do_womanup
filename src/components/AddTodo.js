@@ -1,40 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
-function useInputValue(defaultValue = '') {
-    const [value, setValue] = useState(defaultValue)
+import {useInputValue, useFileInputValue} from '../hooks/useInputValue';
 
-    return {
-        bind: {
-            value,
-            onChange: event => setValue(event.target.value)
-        },
-        clear: () => setValue(''),
-        value: () => value
-    }
-}
-
-function useFileInputValue(defaultValue = '') {
-    const [value, setValue] = useState(defaultValue)
-
-    return {
-        bind: {
-            // value: value,
-            onChange: event => setValue(event.currentTarget.files)
-        },
-        clear: () => setValue(''),
-        value: () => value
-    }
-}
-
+/**
+* AddTodo - компонент с формой для создания задачи
+* @param {Object} props
+* @param {function({title: string, description: string, files: string, date: string, completed: boolean})} props.onCreate - функция которая вызывается при создании задачи
+*/
 function AddTodo({ onCreate }) {
     const titleState = useInputValue()
     const descriptionState = useInputValue()
     const filesState = useFileInputValue()
     const dateState = useInputValue()
 
+    /**
+     * submitHandler - колбек функция
+     * @param {Object} event - ивент сабмита формы
+     */
     function submitHandler(event) {
         event.preventDefault()
+
         const data = {
             title: titleState.value(),
             description: descriptionState.value(),
@@ -51,28 +37,27 @@ function AddTodo({ onCreate }) {
     }
 
     return (
-        <form style={{ marginBottom: '1rem' }} onSubmit={submitHandler}>
-            <input placeholder="Заголовок задачи" {...titleState.bind} />
-            <br />
-            <br />
+        <form className='task-form' onSubmit={submitHandler}>
+            <input className="task-form__title" placeholder="Заголовок задачи" {...titleState.bind} />
+            
             <textarea
                 {...descriptionState.bind}
                 name='description'
                 type='text'
                 placeholder='Описание задачи'
                 required
+                className='task-form__description'
             />
-            <br />
-            <br />
+
             <input
                 {...filesState.bind}
-                multiple='true'
+                multiple={true}
                 name='files'
                 type='file'
                 placeholder='Загрузите файл'
+                className='task-form__file'
             />
-            <br />
-            <br />
+            
             <label className='label-date'>
                 <span>Укажите дату завершения задачи</span>
                 <br />
@@ -80,12 +65,11 @@ function AddTodo({ onCreate }) {
                     {...dateState.bind}
                     name='date'
                     type='date'
-                    required
+                    className='task-form__date'
                 />
             </label>
-            <br />
-            <br />
-            <button type='submit'>Add todo</button>
+
+            <button className='button' type='submit'>Add todo</button>
         </form>
     )
 }

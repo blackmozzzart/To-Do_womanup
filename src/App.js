@@ -1,89 +1,72 @@
 import React, { useEffect } from 'react';
-import TodoList from './Todo/TodoList';
 import Context from './context';
-// import Modal from './Modal/Modal';
-import { saveTodos, getTodos } from './firebase';
+import AddTodo from './components/AddTodo';
+import TodoList from './components/TodoList';
+import { saveTodo, getTodos, updateTodo, deleteTodo } from './firebase';
 
-
-const AddTodo = React.lazy(
-    () =>
-        new Promise(resolve => {
-            setTimeout(() => {
-                resolve(import('./Todo/AddTodo'))
-            }, 1500)
-        })
-)
 
 function App() {
-    const [todos, setTodos] = React.useState([])
+    const [todos, setTodos] = React.useState([]);
 
+    async function loadTodos() {
+        const todosFromServer = await getTodos();
+        setTodos(todosFromServer);
+    }
 
-
-    useEffect(() => {
-        // fetch('https://jsonplaceholder.typicode.com/todos?_limit=5')
-        //     .then(response => response.json())
-        //     .then(todos => {
-        //         setTimeout(() => {
-        //             setTodos(todos)
-        //         }, 1500)
-        //     })
-
-        async function loadTodos() {
-            const todos = await getTodos();
-
-            console.log('todos: ', todos);
-            setTodos(todos);
-        }
-
+    useEffect(() => {    
         loadTodos()
     }, [])
 
-    function toggleTodo(id) {
-        setTodos(
-            todos.map(todo => {
-                if (todo.id === id) {
-                    todo.completed = !todo.completed
-                }
-                return todo
-            })
-        )
-    }
-
+    /**
+    * removeTodo - удаление существующей задачи
+    * @param {string} id - id задачи
+    */
     function removeTodo(id) {
-        setTodos(todos.filter(todo => todo.id !== id))
+        deleteTodo(id).then(loadTodos);
     }
 
-    function addTodo(data) {
-        const todo = {
-            title: data.title,
-            id: Date.now(),
+    /**
+    * editTodo - изменение уже существующей задачи
+    * @param {Object} todo - задача
+    * @param {string} todo.title - заголовок
+    * @param {string} todo.description - описание
+    * @param {string} todo.date - дедлайн
+    * @param {string} todo.files - файлы
+    * @param {string} todo.completed - статус
+    */
+    function editTodo(todo) {
+        const newTodos = todos.filter(({ id }) => id !== todo.id)
+
+        updateTodo(todo);
+        setTodos([...newTodos, todo])
+    }
+
+    /**
+    * addTodo - создание новой задачи
+    * @param {Object} todo
+    * @param {string} todo.title - 
+    * @param {string} todo.description - 
+    * @param {string} todo.date - 
+    * @param {string} todo.files - 
+    * @param {string} todo.completed - 
+    */
+    function addTodo(todo) {        
+        saveTodo({
+            ...todo,
             completed: false,
-            description: data.description,
-            date: data.date,
-            files: data.files
-        };
-        setTodos(todos.concat([todo]))
-        saveTodos({
-            title: data.title,
-            id: Date.now(),
-            completed: false,
-            description: data.description,
-            date: data.date,
             files: []
-        });
+        }).then(loadTodos);
     }
 
     return (
-        <Context.Provider value={{ removeTodo }}>
+        <Context.Provider value={{ removeTodo, editTodo }}>
             <div className='wrapper'>
                 <h1 className='title'>todos</h1>
-                {/* <Modal /> */}
 
-                <React.Suspense fallback={<p>Loading...</p>}>
-                    <AddTodo onCreate={addTodo} />
-                </React.Suspense>
+                <AddTodo onCreate={addTodo} />
+
                 {todos.length ? (
-                    <TodoList todos={todos} onToggle={toggleTodo} />
+                    <TodoList todos={todos} />
                 ) : (
                     <p>No todos!</p>
                 )}

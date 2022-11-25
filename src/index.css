@@ -3,6 +3,7 @@ body {
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background: #ebebeb;
 }
 
 code {
@@ -25,11 +26,54 @@ code {
 
 .rm {
     background: red;
-    border-radius: 50%;
+    border-radius: 10%;
+    color: #fff;
+    border: none;
+}
+
+.ed {
+    background: #e2d029;
+    border-radius: 10%;
     color: #fff;
     border: none;
 }
 
 .done {
     text-decoration: line-through;
+}
+
+/* Task-Form */
+.task-form {
+    border: 1px solid #999;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.task__buttons {
+    margin-top: 8px;
+    text-align: right;
+}
+
+.task-form__file,
+.task-form__date,
+.task-form__title,
+.task-form__description {
+    border: 0;
+    padding: 8px;
+    box-sizing: border-box;
+    outline: none;
+    font-family: Roboto, sans-serif;
+    background-color: #ebebeb;
+}
+
+.button {
+    background-color: transparent;
+    border: 1px solid #999;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 6px 8px;
+    background-color: #fff;
 }

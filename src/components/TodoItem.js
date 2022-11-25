@@ -70,7 +70,7 @@ function TodoItem({ todo, index }) {
                     {isEditing ? <textarea name="description" defaultValue={todo.description} /> : <div>{todo.description}</div>}
                 </div>
                 <div>
-                    {isEditing ? <input name="date" type='date' defaultValue={todo.date} /> : (todo.date && <TodoItemDate date={todo.date} />)}
+                    {isEditing ? <input name="date" type='date' defaultValue={todo.date} /> : (todo.date && <TodoItemDate completed={todo.completed} date={todo.date} />)}
                 </div>
                 {Boolean(files.length) && (
                     <div>

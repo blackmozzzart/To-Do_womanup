@@ -2,8 +2,9 @@
  * TodoItemDate - компонент выводящий дату задачи
  * @param {Object} props
  * @param {string} props.date - ожидаемая дата выполнения задачи
+ * @param {boolean} props.completed - статус задачи
  */
- function TodoItemDate({ date }) {
+ function TodoItemDate({ date, completed }) {
     const dateInstance = new Date(date);
     const currentDate = Date.now();
     const isExpired = dateInstance.getTime() <= currentDate;
@@ -17,7 +18,7 @@
         <div style={style}>
             Дата завершения: {dateInstance.toLocaleDateString()}
             <br />
-            {isExpired && "Дата выполнения задачи истекла!"}
+            {isExpired && !completed && "Дата выполнения задачи истекла!"}
         </div>
     )
 }
